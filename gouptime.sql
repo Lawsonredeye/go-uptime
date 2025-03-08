@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS go_uptime_db;
+
+USE go_uptime_db;
+
+CREATE TABLE IF NOT EXISTS users(
+    id INT PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(256),
+    email VARCHAR(256) UNIQUE,
+    password VARCHAR(256),
+    created_at NOT NULL CURRENT_TIMESTAMP,
+    updated_at NOT NULL CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS endpoints(
+    id INT PRIMARY KEY AUTOINCREMENT,
+    user_id INT,
+    url VARCHAR(256),
+    created_at NOT NULL CURRENT_TIMESTAMP,
+)
