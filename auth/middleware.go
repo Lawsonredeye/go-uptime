@@ -15,14 +15,18 @@ func AuthMiddleWare(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		var email string
+		var (
+			email string
+			id    string
+		)
 
-		err := db.QueryRow("SELECT email FROM users WHERE api_token = ?", api_token).Scan(&email)
+		err := db.QueryRow("SELECT email, id FROM users WHERE api_token = ?", api_token).Scan(&email, &id)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid api key."})
 			return
 		}
 		c.Set("email", email)
+		c.Set("id", id)
 		c.Next()
 	}
 }
