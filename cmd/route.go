@@ -50,7 +50,13 @@ func StartMonitoring(db *sql.DB) gin.HandlerFunc {
 // in the form of a list of map object.
 func GetStatus(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		rows, err := db.Query("SELECT url, status, alert_count FROM endpoints")
+		user_id, err := c.Cookie("user_id")
+		log.Println("User id:", user_id)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unathorized"})
+			return
+		}
+		rows, err := db.Query("SELECT url, status, alert_count FROM endpoints WHERE user_id = ?", user_id)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "Failed to fetch from db",

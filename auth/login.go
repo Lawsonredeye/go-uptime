@@ -2,10 +2,12 @@ package auth
 
 import (
 	"database/sql"
+	"fmt"
 	"gouptime/model"
 	"gouptime/utils"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -25,7 +27,7 @@ func Login(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		var password string
-		err = db.QueryRow("SELECT password FROM users where email = ?", user.Email).Scan(&password)
+		err = db.QueryRow("SELECT password, id FROM users where email = ?", user.Email).Scan(&password, &user.ID)
 
 		if err != nil {
 			log.Println(err)
@@ -45,7 +47,14 @@ func Login(db *sql.DB) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "unable to store user token."})
 			return
 		}
+		id := strconv.Itoa(user.ID)
+		c.Writer.Header().Set("Set-Cookie", fmt.Sprintf("user_id=%s; Path=/; Max-Age=3600; HttpOnly", id))
 
-		c.JSON(http.StatusOK, gin.H{"message": "Login success", "details": gin.H{"api_token": user.ApiToken}})
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Login success",
+			"details": gin.H{
+				"api_token": user.ApiToken,
+			},
+		})
 	}
 }
