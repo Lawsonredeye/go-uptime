@@ -20,12 +20,12 @@ func main() {
 
 	defer db.Close()
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS endpoints (url TEXT PRIMARY KEY, status INT, alert_count INT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS endpoints (url TEXT PRIMARY KEY, user_id integer, status INT, alert_count INT)")
 	if err != nil {
 		log.Fatalf("DB creation error: %v", err)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY, name TEXT, email TEXT unique, password TEXT, organization_name TEXT, subscription TEXT, api_token TEXT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT unique, password TEXT, organization_name TEXT, subscription TEXT, api_token TEXT)")
 	if err != nil {
 		log.Fatalf("DB creation error: %v", err)
 	}
