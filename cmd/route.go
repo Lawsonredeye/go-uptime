@@ -23,17 +23,19 @@ func StartMonitoring(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
+		id := c.GetString("id")
+
 		status, err := utils.Ping(user.URL)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		_, err = db.Exec("INSERT INTO endpoints (url, status, alert_count) VALUES (?, ?, 0)", user.URL, status)
+		_, err = db.Exec("INSERT INTO endpoints (url, status, alert_count, user_id) VALUES (?, ?, 0, ?)", user.URL, status, id)
 		if err != nil {
 			log.Printf("DB error: %v", err)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to save endpoint.",
+				"error": "Failed to save endpoint.",
 			})
 			return
 		}
